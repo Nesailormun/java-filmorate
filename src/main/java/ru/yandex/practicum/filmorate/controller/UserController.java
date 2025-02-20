@@ -23,16 +23,18 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")){
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             throw new ValidationException("Email не соответствует требованиям.");
         }
-        if (user.getLogin() == null || user.getLogin().contains(" ")){
+        if (user.getLogin() == null || user.getLogin().contains(" ")) {
             throw new ValidationException("Имя пользователя не соответствует требованиям.");
         }
-        if (user.getName() == null || user.getName().isBlank())
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
-        if (user.getBirthday().isAfter(LocalDate.now()))
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Некорректная дата рождения.");
+        }
         user.setId(getNextId());
         users.put(user.getId(), user);
         return user;
@@ -43,17 +45,18 @@ public class UserController {
         if (user.getId() == 0) {
             throw new ValidationException("Id должен быть указан");
         }
-        if (!users.containsKey(user.getId())){
+        if (!users.containsKey(user.getId())) {
             throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
         }
-        User updatedUsersData = users.get(user.getId());
-        if (!(user.getPassword() == null))
-            updatedUsersData.setPassword(user.getPassword());
-        if (!(user.getUsername() == null))
-            updatedUsersData.setUsername(user.getUsername());
+        User updatedUser = users.get(user.getId());
         if (!(user.getEmail() == null))
-            updatedUsersData.setEmail(user.getEmail());
-        return updatedUsersData;
+            updatedUser.setEmail(user.getEmail());
+        if (!(user.getName() == null))
+            updatedUser.setName(user.getName());
+        if (!(user.getBirthday() == null))
+            updatedUser.setBirthday(user.getBirthday());
+        users.put(user.getId(), updatedUser);
+        return updatedUser;
     }
 
     private int getNextId() {
