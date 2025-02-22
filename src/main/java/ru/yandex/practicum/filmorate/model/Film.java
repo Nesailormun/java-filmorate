@@ -17,9 +17,11 @@ public class Film {
     private Integer id;
     @NotBlank(message = "Необходимо указать name.")
     private String name;
+    @NotNull
     @Size(max = 200, message = "Превышена максимальная длина описания.")
     private String description;
     private LocalDate releaseDate;
+    @NotNull(message = "Необходимо задать значени продолжительности фильма.")
     @Positive(message = "Продолжительность фильма должна быть больше нуля.")
     private Integer duration;
 }

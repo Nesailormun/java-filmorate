@@ -27,26 +27,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Обработка запроса на добавление нового фильма.");
-        if (film == null) {
-            log.warn("Ошибка обновления. Передан несуществующий объект. user = null.");
-            throw new NullEqualsException("Ошибка, film = null.");
-        }
-        if (film.getName() == null || film.getName().isBlank()) {
-            log.warn("Ошибка валидации name = {}.", film.getName());
-            throw new ValidationException("Название не соответствует требованиям.");
-        }
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            log.warn("Ошибка валидации длины описания фильма = {}.", film.getDescription().length());
-            throw new ValidationException("Превышен лимит длины описания.");
-        }
-        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.warn("Ошибка валидации releaseDate = {}", film.getReleaseDate());
-            throw new ValidationException("Некорректная дата релиза фильма.");
-        }
-        if (film.getDuration() != null && film.getDuration() <= 0) {
-            log.warn("Ошибка валидации duration = {}.", film.getDuration());
-            throw new ValidationException("Продолжительность фильма должна быть больше нуля.");
-        }
+        validReleaseDate(film);
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Фильм с названием: \"{}\" успешно добавлен в фильмотеку.", film.getName());
@@ -54,12 +35,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody @Valid Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         log.info("Обработка запроса на обновление данных о фильме.");
-        if (film == null) {
-            log.warn("Ошибка обновления. Передан несуществующий объект. film = null.");
-            throw new NullEqualsException("Ошибка, film = null.");
-        }
         if (film.getId() == null) {
             log.warn("Ошибка валидации id = null.");
             throw new NullEqualsException("Id должен быть указан.");
@@ -68,20 +45,21 @@ public class FilmController {
             log.warn("Фильм с id = {} не найден.", film.getId());
             throw new NotFoundException("Фильм с id = " + film.getId() + " не найден.");
         }
+        validReleaseDate(film);
         Film updatedFilm = films.get(film.getId());
-        if (!(film.getName() == null)) {
+        if (film.getName() != null) {
             updatedFilm.setName(film.getName());
             log.debug("Изменено значение поля name на: {}", film.getName());
         }
-        if (!(film.getDescription() == null)) {
+        if (film.getDescription() != null) {
             updatedFilm.setDescription(film.getDescription());
             log.debug("Изменено значение поля description на: {}", film.getDescription());
         }
-        if (!(film.getReleaseDate() == null)) {
+        if (film.getReleaseDate() != null) {
             updatedFilm.setReleaseDate(film.getReleaseDate());
             log.debug("Изменено значение поля releaseDate на: {}", film.getReleaseDate());
         }
-        if (!(film.getDuration() == null)) {
+        if (film.getDuration() != null) {
             updatedFilm.setDuration(film.getDuration());
             log.debug("Изменено значение поля duration на: {}", film.getDuration());
         }
@@ -97,5 +75,13 @@ public class FilmController {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    private void validReleaseDate(Film film) {
+        if (film.getReleaseDate() != null &&
+                film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.warn("Ошибка валидации releaseDate = {}", film.getReleaseDate());
+            throw new ValidationException("Некорректная дата релиза фильма.");
+        }
     }
 }
