@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
-    private static final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public Film createFilm(Film film) {

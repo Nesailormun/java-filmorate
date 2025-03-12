@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
 
-    private static final Map<Integer, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     @Override
     public List<User> getAllUsers() {

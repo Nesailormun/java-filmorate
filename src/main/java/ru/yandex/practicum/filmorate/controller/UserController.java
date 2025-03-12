@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
-
 import ru.yandex.practicum.filmorate.service.UserService;
 
 @RestController
@@ -29,12 +28,12 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody @Valid User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody @Valid User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 
