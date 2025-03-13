@@ -33,10 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Integer id) {
-        if (films.containsKey(id)) {
-            return films.get(id);
-        }
-        return null;
+        return films.get(id);
     }
 
     @Override

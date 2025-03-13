@@ -71,17 +71,19 @@ public class UserService {
 
     public User getUserById(Integer id) {
         log.info("Обработка запроса на получение данных пользователя.");
-        if (userStorage.getUserById(id) == null) {
+        User requiredUser = userStorage.getUserById(id);
+        if (requiredUser == null) {
             log.error("Ошибка получения пользователя, пользователь с id = {} не найден.", id);
             throw new NotFoundException("Пользователь с id = " + id + " не найден.");
         }
         log.info("Запрос на получение данных пользователя успешно обработан.");
-        return userStorage.getUserById(id);
+        return requiredUser;
     }
 
     public void deleteUserById(Integer id) {
         log.info("Обработка запроса на удаление пользователя с id = {}.", id);
-        if (userStorage.getUserById(id) == null) {
+        User requiredUser = userStorage.getUserById(id);
+        if (requiredUser == null) {
             log.error("Ошибка удаления пользователя, пользователь с id = {} не найден.", id);
             throw new NotFoundException("Пользователь с id = " + id + " не найден.");
         }
@@ -91,12 +93,12 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) {
         log.info("Обработка запроса на добавление пользователя в друзья.");
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null) {
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
+        if (user == null || friend == null) {
             log.error("Ошибка добавления друга, некорректно указан userId или friendId.");
             throw new NotFoundException("Ошибка, проверьте правильность ввода userId и friendId.");
         }
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
         log.info("Пользователь c id = {} добавил в друзья пользователя с id = {}.", userId, friendId);
@@ -104,12 +106,12 @@ public class UserService {
 
     public void deleteFriend(Integer userId, Integer friendId) {
         log.info("Обработка запроса на удаление пользователя из друзей.");
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null) {
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
+        if (user == null || friend == null) {
             log.error("Ошибка удаления друга, некорректно указан userId или friendId.");
             throw new NotFoundException("Ошибка, проверьте правильность ввода userId и friendId.");
         }
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
         log.info("Пользователь c id = {} удалил из друзей пользователя с id = {}.", userId, friendId);
@@ -117,11 +119,11 @@ public class UserService {
 
     public List<User> getUsersFriends(Integer id) {
         log.info("Обработка запроса на получение списка друзей пользователя.");
-        if (userStorage.getUserById(id) == null) {
+        User user = userStorage.getUserById(id);
+        if (user == null) {
             log.error("Ошибка получения списка друзей пользователя,  пользователь с id = {} не найден.", id);
             throw new NotFoundException("Пользователь с id = " + id + " не найден.");
         }
-        User user = userStorage.getUserById(id);
         log.info("Запрос на получение списка друзей пользователя с id = {} успешно обработан.", id);
         return user.getFriends()
                 .stream()
@@ -131,12 +133,12 @@ public class UserService {
 
     public List<User> getCommonUsersFriends(Integer userId, Integer otherId) {
         log.info("Обработка запроса на получение списка общих друзей.");
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(otherId) == null) {
+        User user = getUserById(userId);
+        User otherUser = getUserById(otherId);
+        if (user == null || otherUser == null) {
             log.error("Ошибка получения списка общих друзей, некорректно указан userId или otherId.");
             throw new NotFoundException("Ошибка, проверьте правильность ввода userId и otherId.");
         }
-        User user = getUserById(userId);
-        User otherUser = getUserById(otherId);
         log.info("Запрос на получение общего списка друзей пользователя с id = {} и пользователя с id = {} выполнен.",
                 userId, otherId);
         return user.getFriends()

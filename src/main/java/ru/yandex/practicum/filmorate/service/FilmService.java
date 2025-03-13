@@ -82,34 +82,35 @@ public class FilmService {
 
     public Film getFilmById(Integer id) {
         log.info("Обработка запроса на получение фильма по id.");
-        if (filmStorage.getFilmById(id) == null) {
+        Film requiredFilm = filmStorage.getFilmById(id);
+        if (requiredFilm == null) {
             log.error("Ошибка получения фильма фильм с id = {} не найден.", id);
             throw new NotFoundException("Фильм с id = " + id + " не найден.");
         }
         log.info("Запрос на получение пользователя с id = {} успешно обработан.", id);
-        return filmStorage.getFilmById(id);
+        return requiredFilm;
     }
 
     public void addLike(Integer filmId, Integer userId) {
         log.info("Обработка запроса на добавление лайка к фильму.");
-        if (filmStorage.getFilmById(filmId) == null || userStorage.getUserById(userId) == null) {
+        Film requiredFilm = filmStorage.getFilmById(filmId);
+        if (requiredFilm == null || userStorage.getUserById(userId) == null) {
             log.error("Ошибка добавления лайка к фильму, некорректные значения filmId или userId.");
             throw new NotFoundException("Ошибка, проверьте правильность ввода filmId и userId.");
         }
-        Film film = filmStorage.getFilmById(filmId);
-        film.getLikes().add(userId);
+        requiredFilm.getLikes().add(userId);
         log.info("Запрос на добавление лайка к фильму с filmId = {} пользователем c userId = {} обработан.",
                 filmId, userId);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
         log.info("Обработка запроса на удаление лайка к фильму.");
-        if (filmStorage.getFilmById(filmId) == null || userStorage.getUserById(userId) == null) {
+        Film requiredFilm = filmStorage.getFilmById(filmId);
+        if (requiredFilm == null || userStorage.getUserById(userId) == null) {
             log.error("Ошибка удаления лайка к фильму, некорректные значения filmId или userId.");
             throw new NotFoundException("Ошибка, проверьте правильность ввода filmId и userId.");
         }
-        Film film = filmStorage.getFilmById(filmId);
-        film.getLikes().remove(userId);
+        requiredFilm.getLikes().remove(userId);
         log.info("Запрос на удаление лайка к фильму с filmId = {} пользователем c userId = {} обработан.",
                 filmId, userId);
     }
